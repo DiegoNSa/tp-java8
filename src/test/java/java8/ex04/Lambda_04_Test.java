@@ -3,6 +3,7 @@ package java8.ex04;
 
 import java8.data.Data;
 import java8.data.Person;
+import java8.data.Account;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -17,15 +18,18 @@ public class Lambda_04_Test {
 
     // tag::interfaces[]
     interface GenericPredicate<T> {
-        // TODO
+        //TODO
+    	boolean test(T t);
     }
 
     interface GenericMapper<T, E> {
-        // TODO
+        //TODO
+        E map(T t);
     }
 
     interface Processor<T> {
-        // TODO
+        //TODO
+    	void process(T t);
     }
     // end::interfaces[]
 
@@ -48,18 +52,30 @@ public class Lambda_04_Test {
         // tag::methods[]
         private FuncCollection<T> filter(GenericPredicate<T> predicate) {
             FuncCollection<T> result = new FuncCollection<>();
-            // TODO
+            //TODO
+            for(T t : this.list) {
+            	if(predicate.test(t)) {
+            		result.add(t);
+            	}
+            }
             return result;
         }
 
         private <E> FuncCollection<E> map(GenericMapper<T, E> mapper) {
             FuncCollection<E> result = new FuncCollection<>();
             // TODO
+            for(T t : this.list) {
+           		result.add(mapper.map(t));
+            }
             return result;
         }
 
         private void forEach(Processor<T> processor) {
            // TODO
+        	for(T t : this.list) {
+            		processor.process(t);
+            }
+
         }
         // end::methods[]
 
@@ -77,15 +93,24 @@ public class Lambda_04_Test {
 
         personFuncCollection
                 // TODO filtrer, ne garder uniquement que les personnes ayant un age > 50
-                .filter(null)
+                .filter(person -> person.getAge() > 50)
                 // TODO transformer la liste de personnes en liste de comptes. Un compte a par défaut un solde à 1000.
-                .map(null)
+                .map(person ->{
+                	Account newAccount = new Account();
+                	newAccount.setOwner(person);
+                	newAccount.setBalance(1000);
+                	return newAccount;
+                }
+                		)
                 // TODO vérifier que chaque compte a un solde à 1000.
                 // TODO vérifier que chaque titulaire de compte a un age > 50
-                .forEach(null);
+                .forEach(account ->{
+                	assert account.getBalance() == 1000;
+                	assert account.getOwner().getAge() > 50;
+                }
+                );
 
         // TODO à supprimer
-        assert false;
     }
     // end::test_filter_map_forEach[]
 
@@ -99,26 +124,32 @@ public class Lambda_04_Test {
 
         // TODO créer un variable filterByAge de type GenericPredicate
         // TODO filtrer, ne garder uniquement que les personnes ayant un age > 50
-        // ??? filterByAge = ???;
+        GenericPredicate<Person> filterByAge = person -> person.getAge() > 50;
 
         // TODO créer un variable mapToAccount de type GenericMapper
         // TODO transformer la liste de personnes en liste de comptes. Un compte a par défaut un solde à 1000.
-        // ??? mapToAccount = ???;
+        GenericMapper<Person,Account> mapToAccount = person -> {
+        	Account newAccount = new Account();
+        	newAccount.setOwner(person);
+        	newAccount.setBalance(1000);
+        	return newAccount;
+        };
 
         // TODO créer un variable verifyAccount de type GenericMapper
         // TODO vérifier que chaque compte a un solde à 1000.
         // TODO vérifier que chaque titulaire de compte a un age > 50
-        // ??? verifyAccount = ???;
+        Processor<Account> verifyAccount = account ->{
+        	assert account.getBalance() == 1000;
+        	assert account.getOwner().getAge() > 50;
+        };
 
-        /* TODO Décommenter
+        //TODO Décommenter
         personFuncCollection
                 .filter(filterByAge)
                 .map(mapToAccount)
                 .forEach(verifyAccount);
-        */
 
         // TODO A supprimer
-        assert false;
     }
     // end::test_filter_map_forEach_with_vars[]
 
